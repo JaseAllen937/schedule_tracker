@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Momentum Tracker - Dashboard</title>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='styles.css') }}"
+    />
+  </head>
+  <body>
+    <div class="app-container">
+      <!-- Sidebar -->
+      <div class="sidebar">
+        <div class="logo">
+          <div class="logo-icon">🔥</div>
+          <h2>Momentum</h2>
+        </div>
+
+        <div class="user-info">
+          <div class="username" id="username">{{ username }}</div>
+        </div>
+
+        <ul class="nav-menu">
+          <li class="nav-item">
+            <a class="nav-link active" onclick="showSection('overview')">
+              <span class="icon">📊</span>
+              <span>Overview</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" onclick="showSection('building')">
+              <span class="icon">💪</span>
+              <span>Build Habits</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" onclick="showSection('breaking')">
+              <span class="icon">🚫</span>
+              <span>Break Habits</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" onclick="showSection('goals')">
+              <span class="icon">🎯</span>
+              <span>Goals</span>
+            </a>
+          </li>
+        </ul>
+
+        <button
+          class="logout-btn"
+          style="margin-bottom: 10px; background: rgba(255, 255, 255, 0.15)"
+          onclick="openModal('help-modal')"
+        >
+          ❓ Confused?
+        </button>
+
+        <button class="logout-btn" onclick="logout()">Logout</button>
+      </div>
+
+      <!-- Main Content -->
+      <div class="main-content">
+        <!-- Overview Section -->
+        <div class="page-section active" id="overview-section">
+          <div class="page-header">
+            <h1>Dashboard Overview</h1>
+            <p>Track your progress at a glance</p>
+          </div>
+
+          <div class="stats-grid">
+            <div class="stat-card">
+              <div class="stat-label">Current Streak</div>
+              <div class="stat-value" id="stat-streak">0</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-label">Longest Streak</div>
+              <div class="stat-value" id="stat-longest">0</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-label">Total Days</div>
+              <div class="stat-value" id="stat-total">0</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-label">Last Completed</div>
+              <div class="stat-value" id="stat-last" style="font-size: 1.3em">
+                Never
+              </div>
+            </div>
+          </div>
+
+          <div class="warning-banner" id="warning-banner">
+            ⚠️ YOUR STREAK IS IN DANGER! Complete your tasks today.
+          </div>
+
+          <div class="progress-section">
+            <h3 style="margin-bottom: 20px; color: #1e3c72">Your Progress</h3>
+            <div class="progress-bar-container">
+              <div
+                class="progress-bar-fill"
+                id="progress-bar"
+                style="width: 0%"
+              ></div>
+            </div>
+            <div id="history-display"></div>
+          </div>
+        </div>
+
+        <!-- Build Habits Section -->
+        <div class="page-section" id="building-section">
+          <div class="page-header">
+            <h1>Build Good Habits</h1>
+            <p>Your daily non-negotiables for success</p>
+          </div>
+
+          <div class="warning-banner" id="building-warning">
+            ⚠️ Complete all tasks today or lose your streak!
+          </div>
+
+          <div class="categories-container" id="categories-container"></div>
+
+          <div class="add-category-btn" onclick="openAddCategoryModal()">
+            <div style="font-size: 2em; margin-bottom: 10px">➕</div>
+            <div>Add New Category</div>
+          </div>
+
+          <div class="complete-day-container">
+            <button
+              class="complete-btn"
+              id="complete-btn"
+              onclick="completeDay()"
+            >
+              ✅ COMPLETE TODAY
+            </button>
+          </div>
+        </div>
+
+        <!-- Break Habits Section -->
+        <div class="page-section" id="breaking-section">
+          <div class="page-header">
+            <h1>Break Bad Habits</h1>
+            <p>Track your sobriety and stay accountable</p>
+          </div>
+
+          <button
+            class="add-btn"
+            style="margin-bottom: 20px"
+            onclick="openAddHabitModal()"
+          >
+            + Track New Habit
+          </button>
+
+          <div id="bad-habits-list"></div>
+        </div>
+
+        <!-- Goals Section -->
+        <div class="page-section" id="goals-section">
+          <div class="page-header">
+            <h1>Goals & Milestones</h1>
+            <p>What you're working towards</p>
+          </div>
+
+          <div class="content-grid">
+            <div class="card">
+              <div class="card-header">
+                <h3>30-Day Milestones</h3>
+                <button class="add-btn" onclick="openAddMilestoneModal()">
+                  + Add
+                </button>
+              </div>
+              <ul class="item-list" id="milestones-list"></ul>
+            </div>
+
+            <div class="card">
+              <div class="card-header">
+                <h3>Ultimate Goal</h3>
+                <button class="add-btn" onclick="openEditGoalModal()">
+                  Edit
+                </button>
+              </div>
+              <div id="goal-display"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Add Task Modal -->
+    <div id="task-modal" class="modal">
+      <div class="modal-content">
+        <h3 class="modal-header">Add Task</h3>
+        <div class="form-group">
+          <label>Category</label>
+          <select id="task-category-select"></select>
+        </div>
+        <div class="form-group">
+          <label>Task Description</label>
+          <input
+            type="text"
+            id="task-input"
+            placeholder="e.g., 30 min: Study for exam"
+          />
+        </div>
+        <div class="modal-actions">
+          <button class="btn btn-primary" onclick="addTask()">Add Task</button>
+          <button class="btn btn-secondary" onclick="closeModal('task-modal')">
+            Cancel
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Add Category Modal -->
+    <div id="category-modal" class="modal">
+      <div class="modal-content">
+        <h3 class="modal-header">Add Category</h3>
+        <div class="form-group">
+          <label>Category Name</label>
+          <input
+            type="text"
+            id="category-name"
+            placeholder="e.g., Personal Development"
+          />
+        </div>
+        <div class="modal-actions">
+          <button class="btn btn-primary" onclick="addCategory()">
+            Add Category
+          </button>
+          <button
+            class="btn btn-secondary"
+            onclick="closeModal('category-modal')"
+          >
+            Cancel
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Add Bad Habit Modal -->
+    <div id="habit-modal" class="modal">
+      <div class="modal-content">
+        <h3 class="modal-header">Track Bad Habit</h3>
+        <div class="form-group">
+          <label>What habit are you breaking?</label>
+          <input
+            type="text"
+            id="habit-name"
+            placeholder="e.g., Pornography, Drugs, Alcohol"
+          />
+        </div>
+        <div class="form-group">
+          <label>Clean Since Date</label>
+          <input type="date" id="habit-date" />
+        </div>
+        <div class="modal-actions">
+          <button class="btn btn-primary" onclick="addBadHabit()">
+            Start Tracking
+          </button>
+          <button class="btn btn-secondary" onclick="closeModal('habit-modal')">
+            Cancel
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Add Milestone Modal -->
+    <div id="milestone-modal" class="modal">
+      <div class="modal-content">
+        <h3 class="modal-header">Add Milestone</h3>
+        <div class="form-group">
+          <label>Milestone</label>
+          <input
+            type="text"
+            id="milestone-input"
+            placeholder="e.g., First paying customer - $5"
+          />
+        </div>
+        <div class="form-group">
+          <label>Target Date</label>
+          <input type="date" id="milestone-date" />
+        </div>
+        <div class="modal-actions">
+          <button class="btn btn-primary" onclick="addMilestone()">
+            Add Milestone
+          </button>
+          <button
+            class="btn btn-secondary"
+            onclick="closeModal('milestone-modal')"
+          >
+            Cancel
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Edit Goal Modal -->
+    <div id="goal-modal" class="modal">
+      <div class="modal-content">
+        <h3 class="modal-header">Set Ultimate Goal</h3>
+        <div class="form-group">
+          <label>What's your end goal?</label>
+          <textarea
+            id="goal-input"
+            rows="3"
+            placeholder="e.g., $1,000/month from AI products by Feb 15"
+          ></textarea>
+        </div>
+        <div class="modal-actions">
+          <button class="btn btn-primary" onclick="saveGoal()">
+            Save Goal
+          </button>
+          <button class="btn btn-secondary" onclick="closeModal('goal-modal')">
+            Cancel
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Help Modal -->
+    <div id="help-modal" class="modal">
+      <div class="modal-content" style="max-width: 600px">
+        <h3 class="modal-header">📖 How to Use Momentum Tracker</h3>
+
+        <div style="line-height: 1.8">
+          <h4 style="color: #1e3c72; margin-top: 20px">
+            🏗️ Step 1: Build Your Daily System
+          </h4>
+          <p>1. Go to <strong>"Build Habits"</strong></p>
+          <p>
+            2. Click <strong>"Add New Category"</strong> (e.g., School, Fitness,
+            Health)
+          </p>
+          <p>
+            3. Click <strong>"+ Add Task"</strong> to add specific daily tasks
+          </p>
+          <p style="margin-left: 20px">Example: "30 min: Study French"</p>
+
+          <h4 style="color: #1e3c72; margin-top: 20px">
+            ✅ Step 2: Complete Your Day
+          </h4>
+          <p>1. Check off each task as you complete it (✓)</p>
+          <p>
+            2. When ALL tasks are done, click the green
+            <strong>"COMPLETE TODAY"</strong> button
+          </p>
+          <p>3. Your streak increases by 1 day!</p>
+
+          <h4 style="color: #ff6b6b; margin-top: 20px">
+            🚫 Step 3: Track Bad Habits (Optional)
+          </h4>
+          <p>1. Go to <strong>"Break Habits"</strong></p>
+          <p>2. Click <strong>"+ Track New Habit"</strong></p>
+          <p>3. Enter what you're quitting (e.g., "Pornography", "Smoking")</p>
+          <p>4. Click "Mark Relapse" if you slip up - it resets the counter</p>
+
+          <h4 style="color: #1e3c72; margin-top: 20px">
+            🎯 Step 4: Set Goals (Optional)
+          </h4>
+          <p>• Add 30-day milestones with target dates</p>
+          <p>• Set your ultimate end goal (e.g., "$1,000/month by March")</p>
+
+          <h4 style="color: #1e3c72; margin-top: 20px">⚠️ Important Rules:</h4>
+          <p>• You can only complete a day ONCE per 24 hours</p>
+          <p>• If you miss a day, your streak resets to 0</p>
+          <p>• You must check ALL tasks before completing the day</p>
+          <p>• Task checkboxes reset every day after completion</p>
+
+          <h4 style="color: #10b981; margin-top: 20px">💡 Pro Tips:</h4>
+          <p>• Start with 2-3 tasks max - don't overwhelm yourself</p>
+          <p>• Make tasks specific and time-bound</p>
+          <p>• Complete your hardest task first thing in the morning</p>
+          <p>• Your longest streak proves what you're capable of</p>
+        </div>
+
+        <div class="modal-actions">
+          <button
+            class="btn btn-primary"
+            style="width: 100%"
+            onclick="closeModal('help-modal')"
+          >
+            Got It!
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='app.js') }}"></script>
+  </body>
+</html>

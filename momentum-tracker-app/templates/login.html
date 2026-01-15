@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Momentum Tracker - Login</title>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='styles.css') }}"
+    />
+  </head>
+  <body class="login-page">
+    <div class="login-container">
+      <div class="logo">
+        <div class="logo-icon">🔥</div>
+        <h1>Momentum Tracker</h1>
+        <p>Build discipline, break bad habits</p>
+      </div>
+
+      <div class="tabs">
+        <div class="tab active" onclick="switchTab('login', this)">Login</div>
+        <div class="tab" onclick="switchTab('register', this)">Register</div>
+      </div>
+
+      <div class="error" id="error"></div>
+
+      <!-- Login Form -->
+      <div class="tab-content active" id="login-content">
+        <form onsubmit="handleLogin(event)">
+          <div class="form-group">
+            <label>Username</label>
+            <input
+              type="text"
+              id="login-username"
+              placeholder="Enter your username"
+              required
+            />
+          </div>
+          <div class="form-group">
+            <label>4-Digit Passcode</label>
+            <input
+              type="password"
+              id="login-passcode"
+              class="passcode-input"
+              maxlength="4"
+              pattern="[0-9]{4}"
+              placeholder="••••"
+              required
+            />
+          </div>
+          <button type="submit" class="btn btn-primary" style="width: 100%">
+            Login
+          </button>
+        </form>
+      </div>
+
+      <!-- Register Form -->
+      <div class="tab-content" id="register-content">
+        <form onsubmit="handleRegister(event)">
+          <div class="form-group">
+            <label>Choose Username</label>
+            <input
+              type="text"
+              id="register-username"
+              placeholder="Pick a username"
+              required
+            />
+          </div>
+          <div class="form-group">
+            <label>Create 4-Digit Passcode</label>
+            <input
+              type="password"
+              id="register-passcode"
+              class="passcode-input"
+              maxlength="4"
+              pattern="[0-9]{4}"
+              placeholder="••••"
+              required
+            />
+          </div>
+          <div class="form-group">
+            <label>Confirm Passcode</label>
+            <input
+              type="password"
+              id="register-confirm"
+              class="passcode-input"
+              maxlength="4"
+              pattern="[0-9]{4}"
+              placeholder="••••"
+              required
+            />
+          </div>
+          <button type="submit" class="btn btn-primary" style="width: 100%">
+            Create Account
+          </button>
+        </form>
+        <p class="info-text">Your passcode is your key. Don't forget it!</p>
+      </div>
+    </div>
+
+    <script>
+      function switchTab(tab, element) {
+        document
+          .querySelectorAll(".tab")
+          .forEach((t) => t.classList.remove("active"));
+        element.classList.add("active");
+        document
+          .querySelectorAll(".tab-content")
+          .forEach((c) => c.classList.remove("active"));
+        document.getElementById(tab + "-content").classList.add("active");
+        document.getElementById("error").style.display = "none";
+      }
+
+      function showError(message) {
+        const errorDiv = document.getElementById("error");
+        errorDiv.textContent = message;
+        errorDiv.style.display = "block";
+      }
+
+      async function handleLogin(e) {
+        e.preventDefault();
+        const username = document.getElementById("login-username").value.trim();
+        const passcode = document.getElementById("login-passcode").value.trim();
+
+        if (!username || !passcode) {
+          showError("Please enter both username and passcode");
+          return;
+        }
+
+        try {
+          const response = await fetch("/api/login", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ username, passcode }),
+          });
+
+          const data = await response.json();
+          if (response.ok) {
+            window.location.href = "/";
+          } else {
+            showError(data.error || "Login failed");
+          }
+        } catch (error) {
+          showError("Network error. Is the server running?");
+        }
+      }
+
+      async function handleRegister(e) {
+        e.preventDefault();
+        const username = document
+          .getElementById("register-username")
+          .value.trim();
+        const passcode = document
+          .getElementById("register-passcode")
+          .value.trim();
+        const confirm = document
+          .getElementById("register-confirm")
+          .value.trim();
+
+        if (passcode !== confirm) {
+          showError("Passcodes do not match!");
+          return;
+        }
+
+        if (passcode.length !== 4 || !/^\d{4}$/.test(passcode)) {
+          showError("Passcode must be exactly 4 digits");
+          return;
+        }
+
+        try {
+          const response = await fetch("/api/register", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ username, passcode }),
+          });
+
+          const data = await response.json();
+          if (response.ok) {
+            window.location.href = "/";
+          } else {
+            showError(data.error || "Registration failed");
+          }
+        } catch (error) {
+          showError("Network error. Is the server running?");
+        }
+      }
+
+      document.getElementById("login-username").focus();
+    </script>
+  </body>
+</html>

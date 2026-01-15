@@ -1,0 +1,69 @@
+{
+  "jase": {
+    "passcode": "0311",
+    "username": "jase",
+    "created": "2026-01-15T14:37:50.942150",
+    "data": {
+      "badHabits": [],
+      "currentStreak": 1,
+      "dailyTasks": [
+        "Make bed in morning",
+        "Study for French"
+      ],
+      "endGoal": "",
+      "history": [
+        {
+          "date": "2026-01-15T14:44:29.355952",
+          "streak": 1,
+          "tasksCompleted": 1
+        }
+      ],
+      "lastCompletedDate": "2026-01-15T14:44:29.355936",
+      "longestStreak": 1,
+      "milestones": [],
+      "totalDaysCompleted": 1
+    }
+  },
+  "jason": {
+    "passcode": "0311",
+    "username": "jason",
+    "created": "2026-01-15T15:40:36.009504",
+    "data": {
+      "badHabits": [
+        {
+          "name": "Gooning",
+          "cleanSince": "2026-01-15T00:00:00.000Z",
+          "lastRelapseDate": null,
+          "currentDaysClean": 0,
+          "longestStreak": 0,
+          "relapses": []
+        }
+      ],
+      "currentStreak": 0,
+      "dailyTasks": [],
+      "endGoal": "",
+      "history": [],
+      "lastCompletedDate": null,
+      "longestStreak": 0,
+      "milestones": [],
+      "totalDaysCompleted": 0,
+      "categories": [
+        {
+          "name": "School",
+          "icon": "\ud83c\udf93",
+          "tasks": []
+        },
+        {
+          "name": "Health",
+          "icon": "\ud83c\udfe5",
+          "tasks": []
+        },
+        {
+          "name": "Other",
+          "icon": "\ud83d\udcdd",
+          "tasks": []
+        }
+      ]
+    }
+  }
+}

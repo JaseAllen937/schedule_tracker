@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Server Test</title>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='styles.css') }}"
+    />
+  </head>
+  <body class="test-page">
+    <h1>🔧 Flask Server Connection Test</h1>
+
+    <div class="test-section">
+      <h2>Server Status</h2>
+      <p id="server-status">Testing...</p>
+    </div>
+
+    <div class="test-section">
+      <h2>API Tests</h2>
+      <button onclick="testRegister()">Test Register</button>
+      <button onclick="testLogin()">Test Login</button>
+      <button onclick="testData()">Test Get Data</button>
+      <pre id="test-results">Click a button to test...</pre>
+    </div>
+
+    <div class="test-section">
+      <h2>Manual Test</h2>
+      <input
+        type="text"
+        id="test-username"
+        placeholder="Username"
+        style="padding: 8px; margin: 5px"
+      />
+      <input
+        type="password"
+        id="test-passcode"
+        placeholder="Passcode (4 digits)"
+        maxlength="4"
+        style="padding: 8px; margin: 5px"
+      />
+      <br />
+      <button onclick="manualRegister()">Register</button>
+      <button onclick="manualLogin()">Login</button>
+      <pre id="manual-results">Enter credentials and test...</pre>
+    </div>
+
+    <div class="test-section">
+      <h2>Instructions</h2>
+      <p>1. If you see "Server is running ✓" above, Flask is working</p>
+      <p>2. Click "Test Register" to create a test account</p>
+      <p>3. Click "Test Login" to verify login works</p>
+      <p>4. Or use the manual test with your own credentials</p>
+      <p>5. Check the browser console (F12) for detailed logs</p>
+    </div>
+
+    <script>
+      async function checkServer() {
+        try {
+          const response = await fetch("/test");
+          const data = await response.json();
+          document.getElementById("server-status").innerHTML =
+            `<span class="success">✓ Server is running</span><br>` +
+            `<pre>${JSON.stringify(data, null, 2)}</pre>`;
+        } catch (error) {
+          document.getElementById("server-status").innerHTML =
+            `<span class="error">✗ Server connection failed</span><br>` +
+            `Error: ${error.message}`;
+        }
+      }
+
+      async function testRegister() {
+        const testUser = "testuser" + Date.now();
+        const testPass = "1234";
+
+        console.log("Testing registration with:", {
+          username: testUser,
+          passcode: testPass,
+        });
+
+        try {
+          const response = await fetch("/api/register", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ username: testUser, passcode: testPass }),
+          });
+
+          const data = await response.json();
+          console.log("Register response:", data);
+
+          document.getElementById("test-results").innerHTML =
+            `Status: ${response.status}\n` +
+            `Response: ${JSON.stringify(data, null, 2)}`;
+
+          if (response.ok) {
+            document.getElementById("test-results").innerHTML +=
+              `\n\n<span class="success">✓ Registration successful!</span>\n` +
+              `Username: ${testUser}\nPasscode: ${testPass}`;
+          }
+        } catch (error) {
+          console.error("Register error:", error);
+          document.getElementById(
+            "test-results"
+          ).innerHTML = `<span class="error">✗ Error: ${error.message}</span>`;
+        }
+      }
+
+      async function testLogin() {
+        const testUser = "testuser";
+        const testPass = "1234";
+
+        console.log("Testing login with:", {
+          username: testUser,
+          passcode: testPass,
+        });
+
+        try {
+          const response = await fetch("/api/login", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ username: testUser, passcode: testPass }),
+          });
+
+          const data = await response.json();
+          console.log("Login response:", data);
+
+          document.getElementById("test-results").innerHTML =
+            `Status: ${response.status}\n` +
+            `Response: ${JSON.stringify(data, null, 2)}`;
+
+          if (response.ok) {
+            document.getElementById(
+              "test-results"
+            ).innerHTML += `\n\n<span class="success">✓ Login successful!</span>`;
+          }
+        } catch (error) {
+          console.error("Login error:", error);
+          document.getElementById(
+            "test-results"
+          ).innerHTML = `<span class="error">✗ Error: ${error.message}</span>`;
+        }
+      }
+
+      async function testData() {
+        console.log("Testing data fetch...");
+
+        try {
+          const response = await fetch("/api/data");
+          const data = await response.json();
+          console.log("Data response:", data);
+
+          document.getElementById("test-results").innerHTML =
+            `Status: ${response.status}\n` +
+            `Response: ${JSON.stringify(data, null, 2)}`;
+
+          if (response.ok) {
+            document.getElementById(
+              "test-results"
+            ).innerHTML += `\n\n<span class="success">✓ Data fetch successful!</span>`;
+          } else {
+            document.getElementById(
+              "test-results"
+            ).innerHTML += `\n\n<span class="error">✗ Not logged in (expected if no login)</span>`;
+          }
+        } catch (error) {
+          console.error("Data error:", error);
+          document.getElementById(
+            "test-results"
+          ).innerHTML = `<span class="error">✗ Error: ${error.message}</span>`;
+        }
+      }
+
+      async function manualRegister() {
+        const username = document.getElementById("test-username").value.trim();
+        const passcode = document.getElementById("test-passcode").value.trim();
+
+        if (!username || !passcode) {
+          document.getElementById("manual-results").innerHTML =
+            '<span class="error">Please enter username and passcode</span>';
+          return;
+        }
+
+        console.log("Manual registration:", { username, passcode });
+
+        try {
+          const response = await fetch("/api/register", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ username, passcode }),
+          });
+
+          const data = await response.json();
+          console.log("Response:", data);
+
+          document.getElementById("manual-results").innerHTML =
+            `Status: ${response.status}\n` +
+            `Response: ${JSON.stringify(data, null, 2)}`;
+
+          if (response.ok) {
+            document.getElementById(
+              "manual-results"
+            ).innerHTML += `\n\n<span class="success">✓ Success! Go to http://localhost:5001 to use the app</span>`;
+          }
+        } catch (error) {
+          console.error("Error:", error);
+          document.getElementById(
+            "manual-results"
+          ).innerHTML = `<span class="error">✗ Error: ${error.message}</span>`;
+        }
+      }
+
+      async function manualLogin() {
+        const username = document.getElementById("test-username").value.trim();
+        const passcode = document.getElementById("test-passcode").value.trim();
+
+        if (!username || !passcode) {
+          document.getElementById("manual-results").innerHTML =
+            '<span class="error">Please enter username and passcode</span>';
+          return;
+        }
+
+        console.log("Manual login:", { username, passcode });
+
+        try {
+          const response = await fetch("/api/login", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ username, passcode }),
+          });
+
+          const data = await response.json();
+          console.log("Response:", data);
+
+          document.getElementById("manual-results").innerHTML =
+            `Status: ${response.status}\n` +
+            `Response: ${JSON.stringify(data, null, 2)}`;
+
+          if (response.ok) {
+            document.getElementById(
+              "manual-results"
+            ).innerHTML += `\n\n<span class="success">✓ Success! Go to http://localhost:5001 to use the app</span>`;
+          }
+        } catch (error) {
+          console.error("Error:", error);
+          document.getElementById(
+            "manual-results"
+          ).innerHTML = `<span class="error">✗ Error: ${error.message}</span>`;
+        }
+      }
+
+      checkServer();
+    </script>
+  </body>
+</html>
