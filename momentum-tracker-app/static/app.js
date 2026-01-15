@@ -678,3 +678,29 @@ document.addEventListener("keydown", (e) => {
 
 // Initialize
 loadData();
+
+// Mobile sidebar toggle functions
+function toggleSidebar() {
+  const sidebar = document.getElementById("sidebar");
+  const overlay = document.querySelector(".sidebar-overlay");
+  sidebar.classList.toggle("open");
+  overlay.classList.toggle("show");
+}
+
+function closeSidebar() {
+  const sidebar = document.getElementById("sidebar");
+  const overlay = document.querySelector(".sidebar-overlay");
+  sidebar.classList.remove("open");
+  overlay.classList.remove("show");
+}
+
+// Auto-close sidebar when clicking nav links on mobile
+document.addEventListener("DOMContentLoaded", function () {
+  document.querySelectorAll(".nav-link").forEach((link) => {
+    link.addEventListener("click", () => {
+      if (window.innerWidth <= 768) {
+        closeSidebar();
+      }
+    });
+  });
+});
