@@ -5,7 +5,7 @@ from flask import Flask, render_template, request, jsonify, session, redirect, u
 import json
 
 app = Flask(__name__, static_folder='static', static_url_path='/static')
-app.secret_key = '4017dfd7fde78f3d24f6ceb5fe285314'
+app.secret_key = os.environ.get('SECRET_KEY', 'dev-key-change-in-production')
 app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'
 app.config['SESSION_COOKIE_SECURE'] = True  # Set True if using HTTPS
 app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(hours=24)  # Session expires after 24 hours
