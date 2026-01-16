@@ -137,6 +137,15 @@
             >
               ✅ COMPLETE TODAY
             </button>
+            <div style="text-align: center; margin: 20px 0">
+              <button
+                class="btn btn-secondary"
+                onclick="clearAllCheckboxes()"
+                style="padding: 12px 30px; font-size: 1em"
+              >
+                ↻ Clear All Checkboxes
+              </button>
+            </div>
           </div>
         </div>
 
@@ -205,6 +214,26 @@
             id="task-input"
             placeholder="e.g., 30 min: Study for exam"
           />
+        </div>
+        <div class="form-group">
+          <label
+            style="
+              display: flex;
+              align-items: center;
+              gap: 10px;
+              cursor: pointer;
+            "
+          >
+            <input
+              type="checkbox"
+              id="task-recurring"
+              style="width: 20px; height: 20px"
+            />
+            <span>🔁 Repeat this task daily</span>
+          </label>
+          <p style="font-size: 0.85em; color: #666; margin-top: 5px">
+            Recurring tasks stay in your list and reset each day
+          </p>
         </div>
         <div class="modal-actions">
           <button class="btn btn-primary" onclick="addTask()">Add Task</button>

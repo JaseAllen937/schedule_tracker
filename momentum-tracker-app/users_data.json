@@ -6,10 +6,6 @@
     "data": {
       "badHabits": [],
       "currentStreak": 1,
-      "dailyTasks": [
-        "Make bed in morning",
-        "Study for French"
-      ],
       "endGoal": "",
       "history": [
         {
@@ -21,7 +17,25 @@
       "lastCompletedDate": "2026-01-15T14:44:29.355936",
       "longestStreak": 1,
       "milestones": [],
-      "totalDaysCompleted": 1
+      "totalDaysCompleted": 1,
+      "categories": [
+        {
+          "name": "General",
+          "icon": "📝",
+          "tasks": [
+            {
+              "text": "Make bed in morning",
+              "completed": false,
+              "recurring": true
+            },
+            {
+              "text": "Study for French",
+              "completed": false,
+              "recurring": true
+            }
+          ]
+        }
+      ]
     }
   },
   "jason": {
@@ -40,7 +54,6 @@
         }
       ],
       "currentStreak": 0,
-      "dailyTasks": [],
       "endGoal": "",
       "history": [],
       "lastCompletedDate": null,
@@ -50,17 +63,17 @@
       "categories": [
         {
           "name": "School",
-          "icon": "\ud83c\udf93",
+          "icon": "🎓",
           "tasks": []
         },
         {
           "name": "Health",
-          "icon": "\ud83c\udfe5",
+          "icon": "🏥",
           "tasks": []
         },
         {
           "name": "Other",
-          "icon": "\ud83d\udcdd",
+          "icon": "📝",
           "tasks": []
         }
       ]

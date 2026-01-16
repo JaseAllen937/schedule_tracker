@@ -141,7 +141,14 @@ function renderCategories() {
                                    class="task-checkbox" 
                                    ${task.completed ? "checked" : ""}
                                    onchange="toggleTask(${catIndex}, ${taskIndex})">
-                            <span class="task-text">${task.text}</span>
+                            <span class="task-text">
+                                ${task.text}
+                                ${
+                                  task.recurring
+                                    ? '<span style="color: #10b981; margin-left: 8px; font-size: 0.9em;" title="Repeats daily">🔁</span>'
+                                    : ""
+                                }
+                            </span>
                             <button class="delete-task-btn" onclick="deleteTask(${catIndex}, ${taskIndex})">🗑️</button>
                         </li>
                     `
@@ -239,6 +246,25 @@ async function completeDay() {
   }
 }
 
+// Clear all checkboxes
+async function clearAllCheckboxes() {
+  if (!confirm("Clear all checkboxes? This will uncheck all tasks.")) return;
+
+  try {
+    const response = await fetch("/api/tasks/clear-all", {
+      method: "POST",
+    });
+
+    const result = await response.json();
+    if (response.ok) {
+      data = result.data;
+      renderCategories();
+    }
+  } catch (error) {
+    console.error("Error clearing checkboxes:", error);
+  }
+}
+
 // Modal functions
 function openModal(modalId) {
   document.getElementById(modalId).classList.add("active");
@@ -274,6 +300,9 @@ async function addTask() {
     document.getElementById("task-category-select").value
   );
   const taskText = document.getElementById("task-input").value.trim();
+  const recurring = document.getElementById("task-recurring")
+    ? document.getElementById("task-recurring").checked
+    : false;
 
   if (!taskText) return;
 
@@ -281,7 +310,11 @@ async function addTask() {
     const response = await fetch("/api/tasks", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ categoryIndex: catIndex, task: taskText }),
+      body: JSON.stringify({
+        categoryIndex: catIndex,
+        task: taskText,
+        recurring: recurring,
+      }),
     });
 
     const result = await response.json();
@@ -290,6 +323,9 @@ async function addTask() {
       renderCategories();
       closeModal("task-modal");
       document.getElementById("task-input").value = "";
+      if (document.getElementById("task-recurring")) {
+        document.getElementById("task-recurring").checked = false;
+      }
     }
   } catch (error) {
     console.error("Error adding task:", error);
@@ -691,7 +727,7 @@ function closeSidebar() {
   const sidebar = document.getElementById("sidebar");
   const overlay = document.querySelector(".sidebar-overlay");
   sidebar.classList.remove("open");
-  overlay.classList.remove("show");
+  overlay.classList.remove("close");
 }
 
 // Auto-close sidebar when clicking nav links on mobile
