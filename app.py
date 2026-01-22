@@ -17,9 +17,12 @@ if USE_DATABASE:
     try:
         from database import init_db, get_user, create_user, update_user_data, get_all_users
         print("✅ Using PostgreSQL database")
-    except ImportError:
+    except ImportError as e:
         USE_DATABASE = False
-        print("⚠️ Database module not found, using JSON file")
+        print(f"⚠️ Database module not found, using JSON file")
+        print(f"❌ Import error details: {type(e).__name__}: {str(e)}")
+        import traceback
+        print(f"❌ Full traceback:\n{traceback.format_exc()}")
 else:
     print("⚠️ No DATABASE_URL found, using JSON file for local development")
 
